@@ -1,4 +1,3 @@
-
 from glob import glob
 from os import path
 from openpyxl import load_workbook
@@ -10,7 +9,7 @@ from PIL import Image
 # ===> I'm here <===
 # Start information 
 pathNameExcelRoot = "Label_CMT_20_03_2021_Real.xlsx" # Excel File Root
-folderImagesRoot = "32" # Folder Images
+folderImagesRoot = "31" # Folder Images Root
 chunkSize = 1000 # Number Line in Files Export  
 # End information
 
@@ -23,15 +22,14 @@ def TotalImages(folderImagesRoot):
 
     return minListNameImage, maxListNameImage
 
-
 def ReadExcelRoot(pathNameExcelRoot, folderImagesRoot):
     # Get min and max Image
     minListNameImage, maxListNameImage = TotalImages(folderImagesRoot)
 
-    # read Excel File
+    # Read Excel File
     wb = load_workbook(filename=pathNameExcelRoot)
 
-    # read Current Sheet
+    # Read Current Sheet
     WBsheetData = wb.active
 
     # Total Row in Excel
@@ -62,6 +60,7 @@ def ReadExcelRoot(pathNameExcelRoot, folderImagesRoot):
                     start += 1
                     cell_obj += 1
                     startValueCellRow += 1
+
                 if idValueCellRow == maxListNameImage:
                     break
         except Exception as Error:
@@ -81,10 +80,10 @@ def ExportToExcels(pathNameExcelRoot, folderImagesRoot, chunkSize):
     ExportExcelFolder = "ExportExcelFolder"
     Path(ExportExcelFolder).mkdir(parents=True, exist_ok=True)
     
-    folderImagesRoot = '32'
-    
-    pathNameExcelWrite = 1
     for item in ChunkData(pathNameExcelRoot, folderImagesRoot, chunkSize):
+        # Name Excel File Output 
+        pathNameExcelWrite = next(iter(item))
+
         # Create an new Excel file and add a worksheet
         workbook = xlsxwriter.Workbook(f"{ExportExcelFolder}/{pathNameExcelWrite}.xlsx")
         worksheet = workbook.add_worksheet()
@@ -98,7 +97,7 @@ def ExportToExcels(pathNameExcelRoot, folderImagesRoot, chunkSize):
         numRow = 1
         for k, v in item.items():
             # Insert Text to Rows a.k.a Column A
-            worksheet.write('A'+str(numRow), k)
+            worksheet.write_string('A'+str(numRow), str(k))
 
             # Parameters Image to Row Excel
             cellImage = 'B' + str(numRow)
@@ -110,12 +109,13 @@ def ExportToExcels(pathNameExcelRoot, folderImagesRoot, chunkSize):
             worksheet.insert_image(cellImage, filename, {'x_scale': y_scale, 'y_scale': y_scale})
 
             # Insert Text to Rows a.k.a Column C
-            worksheet.write('C'+str(numRow), v)
+            worksheet.write_string('C'+str(numRow), str(v))
 
             numRow += 1
-        pathNameExcelWrite += 1
+        # pathNameExcelWrite += 1
         workbook.close()
-        print('Ting Ting')
+        print('Ting Ting\n Export:', pathNameExcelWrite)
+    print("Mission Success")
 
-
+# ===> I'm here <===
 ExportToExcels(pathNameExcelRoot, folderImagesRoot, chunkSize)

@@ -12,6 +12,7 @@ fileNameExtensionExcel = ".xlsx"
 pathNameExcelRoot = "Label_CMT_20_03_2021_Real"+fileNameExtensionExcel # Excel File Root
 folderImagesRoot = "33" # Folder Images Root
 chunkSize = 200 # Number Line in Files Export  
+ExportExcelFolder = "ExportExcelFolder" # Folder Contain File Output
 # End information
 
 # Get Folder contains Images Root
@@ -77,10 +78,9 @@ def ChunkData(pathNameExcelRoot, folderImagesRoot, chunkSize):
     for i in range(0, len(Data), chunkSize):
         yield {k:Data[k] for k in islice(it, chunkSize)}
 
-def ExportToExcels(pathNameExcelRoot, folderImagesRoot, chunkSize):
+def ExportToExcels(pathNameExcelRoot, folderImagesRoot, chunkSize, ExportExcelFolder):
     try: 
         # Create folder contain Excels safely
-        ExportExcelFolder = "ExportExcelFolder"
         Path(ExportExcelFolder).mkdir(parents=True, exist_ok=True)
 
         for item in ChunkData(pathNameExcelRoot, folderImagesRoot, chunkSize):
@@ -129,4 +129,4 @@ def ExportToExcels(pathNameExcelRoot, folderImagesRoot, chunkSize):
         print(f"{Error}\n- Check again: \n + pathNameExcelRoot: {pathNameExcelRoot} \n + folderImagesRoot: {folderImagesRoot}")
 
 # ===> I'm here <===
-ExportToExcels(pathNameExcelRoot, folderImagesRoot, chunkSize)
+ExportToExcels(pathNameExcelRoot, folderImagesRoot, chunkSize, ExportExcelFolder)

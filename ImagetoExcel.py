@@ -2,9 +2,9 @@ import xlsxwriter
 from PIL import Image
 from openpyxl import load_workbook
 from pathlib import Path
+from datetime import datetime
 
 def ReadExcelRoot(pathNameExcelRoot):
-
     wb = load_workbook(filename = pathNameExcelRoot)
     # WBsheetData = wb['label']
     WBsheetData = wb.active
@@ -50,7 +50,7 @@ def ExportImagesToExcel(pathNameExcelRoot, folderImagesRoot, pathNameExcelWrite)
                 worksheet.write('A'+str(numberA), TextToFile[0])
 
                 # Parameters Image to Row Excel
-                filename = f"{folderImagesRoot}/{TextToFile[0]}.png"
+                filename = f"{folderImagesRoot}/{TextToFile[0]}.jpg"
                 img = Image.open(filename)
                 image_width, image_height = img.size
                 y_scale = cell_height/image_height
@@ -59,9 +59,9 @@ def ExportImagesToExcel(pathNameExcelRoot, folderImagesRoot, pathNameExcelWrite)
                 worksheet.insert_image(cellImage, filename, {'x_scale': y_scale, 'y_scale': y_scale})
 
                 # Insert Text to Rows a.k.a Column C
-                worksheet.write('C'+str(numberC), TextToFile[1])
+                # worksheet.write('C'+str(numberC), TextToFile[1])
                 
-                numberC += 1
+                # numberC += 1
                 numberA += 1
                 numberB += 1
 
@@ -72,9 +72,17 @@ def ExportImagesToExcel(pathNameExcelRoot, folderImagesRoot, pathNameExcelWrite)
         workbook.close()
     workbook.close()
 
-pathNameExcelRoot = "Label_CMT_20_03_2021_Real"+".xlsx"
-folderImagesRoot = '32'
-pathNameExcelWrite = "ImageToExcel"+".xlsx"
+def main():
+    pathNameExcelRoot = "ExcelFileMain"+".xlsx"
+    folderImagesRoot = 'Images'
+    pathNameExcelWrite = "Result_"+datetime.now().strftime("%Y%m%d_%H%M%S") + ".xlsx"
+    
+    # ===>> Uncomment and Run here <<====
+    ExportImagesToExcel(pathNameExcelRoot, folderImagesRoot, pathNameExcelWrite)
+
+if __name__ == "__main__":
+    main()
+
 
 """
 pathNameExcelRoot = 'images - Copy.xlsx'
@@ -82,8 +90,6 @@ folderImagesRoot = 'imagesDATA'
 pathNameExcelWrite = 'ImagesToExcel.xlsx'
 """
 
-# ===>> Uncomment and Run here <<====
-ExportImagesToExcel(pathNameExcelRoot, folderImagesRoot, pathNameExcelWrite)
 
 
 

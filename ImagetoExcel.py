@@ -2,10 +2,10 @@ import xlsxwriter
 from PIL import Image
 from openpyxl import load_workbook
 from pathlib import Path
-from datetime import datetime
 
-def ReadExcelRoot(pathNameExcelRoot):
-    wb = load_workbook(filename = pathNameExcelRoot)
+def ReadExcelRoot(pathExcelRoot):
+
+    wb = load_workbook(filename = pathExcelRoot)
     # WBsheetData = wb['label']
     WBsheetData = wb.active
     
@@ -21,13 +21,9 @@ def ReadExcelRoot(pathNameExcelRoot):
         yield TextCount
         start += 1
 
-def ExportImagesToExcel(pathNameExcelRoot, folderImagesRoot, pathNameExcelWrite):
-    # Create folder contain Excels safely
-    ExportExcelFolder = "ExportExcelFolder"
-    Path(ExportExcelFolder).mkdir(parents=True, exist_ok=True)
-
+def ExportImagesToExcel(pathExcelRoot, folderListImages, pathExcelWrite, folderExcelResult):
     # Create an new Excel file and add a worksheet
-    workbook = xlsxwriter.Workbook(f"{ExportExcelFolder}/{pathNameExcelWrite}")
+    workbook = xlsxwriter.Workbook(f"{folderExcelResult}/{pathExcelWrite}")
     worksheet = workbook.add_worksheet()
 
     # Height Image and Cell
@@ -38,19 +34,18 @@ def ExportImagesToExcel(pathNameExcelRoot, folderImagesRoot, pathNameExcelWrite)
     worksheet.set_column(1,1, 50)
 
     # Texts in Excel Root
-    TextCount = ReadExcelRoot(pathNameExcelRoot)
+    TextCount = ReadExcelRoot(pathExcelRoot)
 
     numberA = numberB = numberC = 1
     try:
         for T in TextCount:
             TextToFile = T.split('|||')
-            # print(TextToFile[1])
             try:
                 # Insert Text to Rows a.k.a Column A
                 worksheet.write('A'+str(numberA), TextToFile[0])
 
                 # Parameters Image to Row Excel
-                filename = f"{folderImagesRoot}/{TextToFile[0]}.jpg"
+                filename = f"{folderListImages}/{TextToFile[0]}.png"
                 img = Image.open(filename)
                 image_width, image_height = img.size
                 y_scale = cell_height/image_height
@@ -59,9 +54,9 @@ def ExportImagesToExcel(pathNameExcelRoot, folderImagesRoot, pathNameExcelWrite)
                 worksheet.insert_image(cellImage, filename, {'x_scale': y_scale, 'y_scale': y_scale})
 
                 # Insert Text to Rows a.k.a Column C
-                # worksheet.write('C'+str(numberC), TextToFile[1])
+                worksheet.write('C'+str(numberC), TextToFile[1])
                 
-                # numberC += 1
+                numberC += 1
                 numberA += 1
                 numberB += 1
 
@@ -72,27 +67,23 @@ def ExportImagesToExcel(pathNameExcelRoot, folderImagesRoot, pathNameExcelWrite)
         workbook.close()
     workbook.close()
 
-def main():
-    pathNameExcelRoot = "ExcelFileMain"+".xlsx"
-    folderImagesRoot = 'Images'
-    pathNameExcelWrite = "Result_"+datetime.now().strftime("%Y%m%d_%H%M%S") + ".xlsx"
-    
-    # ===>> Uncomment and Run here <<====
-    ExportImagesToExcel(pathNameExcelRoot, folderImagesRoot, pathNameExcelWrite)
+
+
 
 if __name__ == "__main__":
-    main()
+    pathExcelRoot = "Label_CMT_20_03_2021_Real"+".xlsx"
+    folderListImages = '31'
+    pathExcelWrite = "ImageToExcel"+".xlsx"
+    
+    # Create folder contain Excels safely
+    folderExcelResult = "ExportExcelFolder"
+    Path(folderExcelResult).mkdir(parents=True, exist_ok=True)
+    
+    """
+    pathExcelRoot = 'images - Copy.xlsx'
+    folderListImages = 'imagesDATA'
+    pathExcelWrite = 'ImagesToExcel.xlsx'
+    """
 
-
-"""
-pathNameExcelRoot = 'images - Copy.xlsx'
-folderImagesRoot = 'imagesDATA'
-pathNameExcelWrite = 'ImagesToExcel.xlsx'
-"""
-
-
-
-
-
-
-
+    # ===>> Uncomment and Run here <<====
+    ExportImagesToExcel(pathExcelRoot, folderListImages, pathExcelWrite, folderExcelResult)
